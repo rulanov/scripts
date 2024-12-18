@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Dump RSA key
+# Usage: cat-rsa key_file.pem [modulus]
+KEY=$1
+MOD=$2
+if [ -z ${KEY} ]; then
+    echo "ERROR: Missing PEM file path. Usage: $(basename $0) PRIVKEY.pem [modulus]"
+    exit 1
+else
+    # echo "* File: ${KEY}"
+    KEY_OUT=$( openssl rsa -text -noout -in ${KEY} )
+    if [ -z "${MOD}" ]; then
+       echo "${KEY_OUT}"
+    else
+       echo "${KEY_OUT}" | grep -A1 'modulus'
+    fi
+fi
