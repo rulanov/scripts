@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+# Author: Ruslan Ulanov
+# Description: Check if key matches certificate
+# Usage: keycert-check PRIVKEY.pem CERTIFICATE.pem
+key=$1
+cert=$2
+if [[ $# -eq 0 ]]
+then
+    echo "ERROR: Arguments not given. Usage: $(basename $0) PRIVKEY.pem CERTIFICATE.pem"
+else
+    keyhash=$(openssl rsa -noout -modulus -in "$key" | openssl md5)
+    echo $key $keyhash
+    
+    crthash=$(openssl x509 -noout -modulus -in "$cert" | openssl md5)
+    echo $cert $crthash
+    
+    if [ "$keyhash" = "$crthash" ]; then
+        keytest=$(openssl rsa -in "$key" -check -noout)
+        echo "---- "$keytest" ----"
+    else
+        echo "!!!! Invalid key for given cert !!!!"
+    fi
+fi
+

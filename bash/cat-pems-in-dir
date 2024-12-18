@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Author: Ruslan Ulanov
+# Description: Dump all PEM certs from one folder
+# Usage: cat-pems-in-dir /path/to/certs/dir/
+for f in *.pem; do 
+    if grep "BEGIN CERTIFICATE" $f 2>&1 > /dev/null; then
+        echo "* File: $f"
+        openssl x509 -noout -text -in "$f" | grep CN
+    fi
+done
+

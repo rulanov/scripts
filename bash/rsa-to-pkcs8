@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Author: Ruslan Ulanov
+# Description: Convert RSA key to PKCS8 format
+# Usage: rsa-to-pkcs8 key.pem [outNamePrefix] [password]
+IN_KEY=$1
+OUT_PREFIX=${2:-out}
+PASS=${3:-Newpass1}
+
+function usage
+{
+    echo "Usage: $(basename $0) key.pem [outNamePrefix] [password]"
+    exit -1
+}
+
+function toPk8
+{
+    echo "*** Encrypting key as PKCS8 file..."
+    openssl rsa -aes192 -in ${IN_KEY} -out ${OUT_PREFIX}-key-aes.pem -passin pass:${PASS}
+    openssl pkcs8 -topk8 -inform PEM -outform PEM -in ${OUT_PREFIX}-key-aes.pem -out ${OUT_PREFIX}-key-p8.pem -v2 aes-192-cbc -passin pass:${PASS}
+    rm ${OUT_PREFIX}-key-aes.pem
+}
+
+[ -z ${IN_KEY} ] && usage || toPk8
